@@ -14,7 +14,7 @@ base_path = cfg['basePath']
 api_version = float(cfg['info']['version'])
 consumes = cfg['consumes']
 produces = cfg['produces']
-service_api = "172.17.0.70:17088"
+service_api = "http://172.17.0.70:17088"
 
 app = Flask(__name__)
 app.debug = True
