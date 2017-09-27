@@ -14,7 +14,7 @@ base_path = cfg['basePath']
 api_version = float(cfg['info']['version'])
 consumes = cfg['consumes']
 produces = cfg['produces']
-service_api = "http://www.mocky.io/v2/59cb83f02d0000b908806b6f"
+service_api = "172.17.0.70:17088"
 
 app = Flask(__name__)
 app.debug = True
@@ -30,37 +30,37 @@ def page_not_found(e):
 @app.route(base_path + '/hello', methods=['POST'])
 def main_hello():
   response = {}
-  # try:
-  data = json.loads(request.data)
-  r = requests.get(service_api).text
-  r_json = json.loads(r)
-  flag = checkRequest(data)
-  if flag == 0:
-    response['detail'] = "'request' is a required property"
+  try:
+    data = json.loads(request.data.decode())
+    r = requests.get(service_api).text
+    r_json = json.loads(r)
+    flag = checkRequest(data)
+    if flag == 0:
+      response['detail'] = "'request' is a required property"
+      response['status'] = "400"
+      response['title'] = "Bad Request"
+      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
+    elif flag == 1:    
+      response['detail'] = "Value in 'request' must be Integer"
+      response['status'] = "400"
+      response['title'] = "Bad Request"
+      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
+    else:
+      file = open('count.txt', 'r')
+      counter = int(file.read())
+      counter = counter + 1
+      file = open('count.txt', 'w')
+      file.write(str(counter))
+      response['response'] = "Good "+ r_json['state'] + ", " + data['request']
+      response['currentvisit'] = r_json['datetime']
+      response['count'] = counter
+      response['apiversion'] = api_version
+      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=200)
+  except:
+    response['detail'] = "Payload must be a valid JSON"
     response['status'] = "400"
     response['title'] = "Bad Request"
     return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
-  elif flag == 1:    
-    response['detail'] = "Value in 'request' must be Integer"
-    response['status'] = "400"
-    response['title'] = "Bad Request"
-    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
-  else:
-    file = open('count.txt', 'r')
-    counter = int(file.read())
-    counter = counter + 1
-    file = open('count.txt', 'w')
-    file.write(str(counter))
-    response['response'] = "Good "+ r_json['state'] + ", " + data['request']
-    response['currentvisit'] = r_json['datetime']
-    response['count'] = counter
-    response['apiversion'] = api_version
-    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=200)
-  # except:
-  #   response['detail'] = "Payload must be a valid JSON"
-  #   response['status'] = "400"
-  #   response['title'] = "Bad Request"
-  #   return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
 
 @app.route(base_path + '/plus_one/<val>', methods=['GET'])
 def main_plus(val):
