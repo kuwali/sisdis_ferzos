@@ -16,12 +16,6 @@ consumes = cfg['consumes']
 produces = cfg['produces']
 service_api = "http://www.mocky.io/v2/59cb83f02d0000b908806b6f"
 
-# class MyResponse(Response):
-#     default_mimetype = produces
-
-# class MyFlask(Flask):
-#     response_class = MyResponse
-
 app = Flask(__name__)
 app.debug = True
 
@@ -68,10 +62,6 @@ def main_hello():
   #   response['title'] = "Bad Request"
   #   return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
 
-# @app.route(base_path + '/hello', methods=['GET', 'PUT', 'DELETE', 'HEAD'])
-# def main_not_hello():
-#     return "405 Method Not Allowed\n"
-
 @app.route(base_path + '/plus_one/<val>', methods=['GET'])
 def main_plus(val):
   valid = checkValue(val)
@@ -105,4 +95,4 @@ def checkValue(val):
     return False
   
 if __name__ == '__main__':
-  app.run(port=8080)
+  app.run(ip_address, port=8080)
