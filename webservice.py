@@ -12,7 +12,7 @@ with open(yaml_file, 'r') as ymlfile:
 base_path = cfg['basePath']
 api_version = float(cfg['info']['version'])
 consumes = cfg['consumes']
-produces = cfg['produces']
+produces = str(cfg['produces'][0])
 service_api = "http://172.17.0.70:17088"
 
 app = Flask(__name__)
@@ -38,12 +38,12 @@ def main_hello():
       response['detail'] = "'request' is a required property"
       response['status'] = "400"
       response['title'] = "Bad Request"
-      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
+      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400, mimetype=produces)
     elif flag == 1:    
       response['detail'] = "Value in 'request' must be Integer"
       response['status'] = "400"
       response['title'] = "Bad Request"
-      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
+      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400, mimetype=produces)
     else:
       file = open('count.txt', 'r')
       counter = int(file.read())
@@ -54,13 +54,13 @@ def main_hello():
       response['currentvisit'] = r_json['datetime']
       response['count'] = counter
       response['apiversion'] = api_version
-      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=200)
+      return Response(json.dumps(response, ensure_ascii=True)+"\n", status=200, mimetype=produces)
   except Exception as ex:
     print (ex)
     response['detail'] = "Payload must be a valid JSON"
     response['status'] = "400"
     response['title'] = "Bad Request"
-    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400)
+    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=400, mimetype=produces)
 
 @app.route(base_path + '/plus_one/<val>', methods=['GET'])
 def main_plus(val):
@@ -69,12 +69,12 @@ def main_plus(val):
   if valid:
     response['plusoneret'] = int(val) + 1
     response['apiversion'] = api_version
-    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=200)
+    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=200, mimetype=produces)
   else:
     response['detail'] = "The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again."
     response['status'] = "404"
     response['title'] = "Not Found"
-    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=404)
+    return Response(json.dumps(response, ensure_ascii=True)+"\n", status=404, mimetype=produces)
 
 @app.route(base_path + '/spesifikasi.yaml', methods=['GET'])
 def send_yaml():
